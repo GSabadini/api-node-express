@@ -1,8 +1,12 @@
 describe('Routes Books', () => {
-  const { Books } = app.datasource.models;
+  const {
+    Books,
+  } = app.datasource.models;
+
   const defaultBook = {
     id: 1,
     name: 'Default Book',
+    description: 'Default description',
   };
 
   beforeEach((done) => {
@@ -16,14 +20,19 @@ describe('Routes Books', () => {
 
   describe('Route GET /books', () => {
     it('should return a list of books', (done) => {
+      const booksList = Joi.array().items(Joi.object().keys({
+        id: Joi.number(),
+        name: Joi.string(),
+        description: Joi.string(),
+        created_at: Joi.date().iso(),
+        updated_at: Joi.date().iso(),
+      }));
+
       request
         .get('/books')
         .expect(200)
         .end((err, res) => {
-          const [resultBook] = res.body;
-
-          expect(resultBook.name).to.be.equal(defaultBook.name);
-          expect(resultBook.id).to.be.equal(defaultBook.id);
+          joiAssert(res.body, booksList);
 
           done(err);
         });
@@ -32,12 +41,19 @@ describe('Routes Books', () => {
 
   describe('Route GET /books/:id', () => {
     it('should return a book', (done) => {
+      const book = Joi.object().keys({
+        id: Joi.number(),
+        name: Joi.string(),
+        description: Joi.string(),
+        created_at: Joi.date().iso(),
+        updated_at: Joi.date().iso(),
+      });
+
       request
         .get(`/books/${defaultBook.id}`)
         .expect(200)
         .end((err, res) => {
-          expect(res.body.name).to.be.equal(defaultBook.name);
-          expect(res.body.id).to.be.equal(defaultBook.id);
+          joiAssert(res.body, book);
 
           done(err);
         });
@@ -57,16 +73,17 @@ describe('Routes Books', () => {
       const updateBook = {
         id: 1,
         name: 'Updated book',
+        description: 'Updated description',
       };
+
+      const updatedCount = Joi.array().items(1);
 
       request
         .put(`/books/${defaultBook.id}`)
         .send(updateBook)
         .expect(200)
         .end((err, res) => {
-          const [result] = res.body;
-
-          expect(result).to.be.equal(1);
+          joiAssert(res.body, updatedCount);
 
           done(err);
         });
@@ -76,15 +93,25 @@ describe('Routes Books', () => {
   describe('Route POST /books', () => {
     it('should create a book', (done) => {
       const newBook = {
+        id: 2,
         name: 'New Book',
+        description: 'New description',
       };
+
+      const book = Joi.object().keys({
+        id: Joi.number(),
+        name: Joi.string(),
+        description: Joi.string(),
+        created_at: Joi.date().iso(),
+        updated_at: Joi.date().iso(),
+      });
 
       request
         .post('/books')
         .send(newBook)
         .expect(201)
         .end((err, res) => {
-          expect(res.body.name).to.be.equal(newBook.name);
+          joiAssert(res.body, book);
 
           done(err);
         });

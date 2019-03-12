@@ -1,4 +1,4 @@
---require tests/integration-mocha/helpers.js
+--require tests/integration/helpers.js
 --require babel-core/register
 --reporter spec
 --compilers js:babel-core/register
