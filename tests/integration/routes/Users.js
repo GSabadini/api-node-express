@@ -1,4 +1,8 @@
+import jwt from 'jwt-simple';
+
 describe('Routes Users', () => {
+  const jwtSecret = app.config.jwtSecret;
+
   const {
     Users,
   } = app.datasource.models;
@@ -15,14 +19,29 @@ describe('Routes Users', () => {
       .destroy({
         where: {},
       })
-      .then(() => Users.create(defaultUser))
-      .then(() => done());
+      .then(() => Users.create({
+        name: 'Test',
+        email: 'test@test.com',
+        password: 'test',
+      }))
+      .then((user) => {
+        Users.create(defaultUser)
+          .then(() => {
+            token = jwt.encode({
+              id: user.id
+            }, jwtSecret)
+            done();
+          })
+      })
   });
+
+  let token;
 
   describe('Route GET /users', () => {
     it('should return a list of users', (done) => {
       request
         .get('/users')
+        .set('Authorization', `Bearer ${token}`)
         .expect(200)
         .end((err, res) => {
           const [resultUser] = res.body;
@@ -40,6 +59,7 @@ describe('Routes Users', () => {
     it('should return a user', (done) => {
       request
         .get(`/users/${defaultUser.id}`)
+        .set('Authorization', `Bearer ${token}`)
         .expect(200)
         .end((err, res) => {
           expect(res.body.id).to.be.equal(defaultUser.id);
@@ -55,6 +75,7 @@ describe('Routes Users', () => {
     it('should delete users', (done) => {
       request
         .delete(`/users/${defaultUser.id}`)
+        .set('Authorization', `Bearer ${token}`)
         .expect(204, done);
     });
   });
@@ -70,6 +91,7 @@ describe('Routes Users', () => {
 
       request
         .put(`/users/${defaultUser.id}`)
+        .set('Authorization', `Bearer ${token}`)
         .send(updatedUser)
         .expect(200)
         .end((err, res) => {
@@ -92,6 +114,7 @@ describe('Routes Users', () => {
 
       request
         .post('/users')
+        .set('Authorization', `Bearer ${token}`)
         .send(newUser)
         .expect(201)
         .end((err, res) => {

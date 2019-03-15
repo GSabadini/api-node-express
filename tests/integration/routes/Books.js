@@ -1,6 +1,11 @@
+import jwt from 'jwt-simple';
+
 describe('Routes Books', () => {
+  const jwtSecret = app.config.jwtSecret;
+
   const {
     Books,
+    Users,
   } = app.datasource.models;
 
   const defaultBook = {
@@ -9,19 +14,38 @@ describe('Routes Books', () => {
     description: 'Default description',
   };
 
+  const defaultUser = {
+    id: 1,
+    name: 'Default Name',
+    email: 'default@default.com',
+    password: 'default',
+  };
+
+  let token;
   beforeEach((done) => {
-    Books
-      .destroy({
-        where: {},
+    Users.destroy({
+        where: {}
       })
-      .then(() => Books.create(defaultBook))
-      .then(() => done());
+      .then(() => Users.create(defaultUser))
+      .then((user) => {
+        Books.destroy({
+            where: {}
+          })
+          .then(() => Books.create(defaultBook))
+          .then(() => {
+            token = jwt.encode({
+              id: user.id
+            }, jwtSecret)
+            done();
+          })
+      });
   });
 
   describe('Route GET /books', () => {
     it('should return a list of books', (done) => {
       request
         .get('/books')
+        .set('Authorization', `Bearer ${token}`)
         .expect(200)
         .end((err, res) => {
           const [resultBook] = res.body;
@@ -39,6 +63,7 @@ describe('Routes Books', () => {
     it('should return a book', (done) => {
       request
         .get(`/books/${defaultBook.id}`)
+        .set('Authorization', `Bearer ${token}`)
         .expect(200)
         .end((err, res) => {
           expect(res.body.name).to.be.equal(defaultBook.name);
@@ -54,6 +79,7 @@ describe('Routes Books', () => {
     it('should delete book', (done) => {
       request
         .delete(`/books/${defaultBook.id}`)
+        .set('Authorization', `Bearer ${token}`)
         .expect(204, done);
     });
   });
@@ -68,6 +94,7 @@ describe('Routes Books', () => {
 
       request
         .put(`/books/${defaultBook.id}`)
+        .set('Authorization', `Bearer ${token}`)
         .send(updateBook)
         .expect(200)
         .end((err, res) => {
@@ -89,6 +116,7 @@ describe('Routes Books', () => {
 
       request
         .post('/books')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBook)
         .expect(201)
         .end((err, res) => {

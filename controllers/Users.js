@@ -50,7 +50,7 @@ class UsersController {
       .catch(error => errorResponse(error.message, HttpStatus.UNPROCESSABLE_ENTITY));
   }
 
-  destroy(params) {
+  delete(params) {
     return this
       .Users
       .destroy({
