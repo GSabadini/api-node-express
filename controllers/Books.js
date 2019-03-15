@@ -1,9 +1,11 @@
-const defaultResponse = (data, statusCode = 200) => ({
+import HttpStatus from 'http-status';
+
+const defaultResponse = (data, statusCode = HttpStatus.OK) => ({
   data,
   statusCode,
 });
 
-const errorResponse = (message, statusCode = 400) => defaultResponse({
+const errorResponse = (message, statusCode = HttpStatus.BAD_REQUEST) => defaultResponse({
   message,
 }, statusCode);
 
@@ -34,8 +36,8 @@ class BooksController {
     return this
       .Books
       .create(params)
-      .then(result => defaultResponse(result, 201))
-      .catch(error => errorResponse(error.message, 422));
+      .then(result => defaultResponse(result, HttpStatus.CREATED))
+      .catch(error => errorResponse(error.message, HttpStatus.UNPROCESSABLE_ENTITY));
   }
 
   update(data, params) {
@@ -44,8 +46,8 @@ class BooksController {
       .update(data, {
         where: params,
       })
-      .then(result => defaultResponse(result, 200))
-      .catch(error => errorResponse(error.message, 422));
+      .then(result => defaultResponse(result, HttpStatus.OK))
+      .catch(error => errorResponse(error.message, HttpStatus.UNPROCESSABLE_ENTITY));
   }
 
   destroy(params) {
@@ -54,8 +56,8 @@ class BooksController {
       .destroy({
         where: params,
       })
-      .then(result => defaultResponse(result, 204))
-      .catch(error => errorResponse(error.message, 422));
+      .then(result => defaultResponse(result, HttpStatus.NO_CONTENT))
+      .catch(error => errorResponse(error.message, HttpStatus.UNPROCESSABLE_ENTITY));
   }
 }
 

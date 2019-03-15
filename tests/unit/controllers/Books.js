@@ -1,4 +1,4 @@
-import BooksController from '../../../controllers/books';
+import BooksController from '../../../controllers/Books';
 
 describe('Book Controller', () => {
   describe('Get all books: getAll()', () => {
