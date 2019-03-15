@@ -1,16 +1,14 @@
 import passport from 'passport';
 import {
   Strategy,
-  ExtractJwt,
+  ExtractJwt
 } from 'passport-jwt';
 
 export default app => {
-  const {
-    Users
-  } = app.datasource.models;
+  const Users = app.datasource.models.Users;
   const opts = {};
   opts.secretOrKey = app.config.jwtSecret;
-  opts.jwtFromRequest = ExtractJwt.fromAuthHeader();
+  opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 
   const strategy = new Strategy(opts, (payload, done) => {
     Users.findById(payload.id)
@@ -21,17 +19,15 @@ export default app => {
             email: user.email,
           });
         }
-
         return done(null, false);
       })
       .catch(error => done(error, null));
-  })
+  });
 
   passport.use(strategy);
 
   return {
-    initilize: () => passport.initialize(),
-    authenticate: () => passport.authenticate('jwt', app.config.jwtSecret),
-  }
-
-}
+    initialize: () => passport.initialize(),
+    authenticate: () => passport.authenticate('jwt', app.config.jwtSession),
+  };
+};
