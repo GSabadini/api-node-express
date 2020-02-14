@@ -1,18 +1,18 @@
 import passport from 'passport';
 import {
   Strategy,
-  ExtractJwt
+  ExtractJwt,
 } from 'passport-jwt';
 
-export default app => {
-  const Users = app.datasource.models.Users;
+export default (app) => {
+  const { Users } = app.datasource.models;
   const opts = {};
   opts.secretOrKey = app.config.jwtSecret;
   opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 
   const strategy = new Strategy(opts, (payload, done) => {
     Users.findById(payload.id)
-      .then(user => {
+      .then((user) => {
         if (user) {
           return done(null, {
             id: user.id,

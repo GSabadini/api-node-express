@@ -1,7 +1,7 @@
 import jwt from 'jwt-simple';
 
 describe('Routes Users', () => {
-  const jwtSecret = app.config.jwtSecret;
+  const { jwtSecret } = app.config;
 
   const {
     Users,
@@ -28,11 +28,11 @@ describe('Routes Users', () => {
         Users.create(defaultUser)
           .then(() => {
             token = jwt.encode({
-              id: user.id
-            }, jwtSecret)
+              id: user.id,
+            }, jwtSecret);
             done();
-          })
-      })
+          });
+      });
   });
 
   let token;

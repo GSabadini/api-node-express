@@ -6,14 +6,14 @@ export default (app) => {
     .all(app.auth.authenticate())
     .get((req, res) => {
       usersController.getAll()
-        .then(response => {
+        .then((response) => {
           res.status(response.statusCode);
           res.json(response.data);
         });
     })
     .post((req, res) => {
       usersController.create(req.body)
-        .then(response => {
+        .then((response) => {
           res.status(response.statusCode);
           res.json(response.data);
         });
@@ -23,21 +23,21 @@ export default (app) => {
     .all(app.auth.authenticate())
     .get((req, res) => {
       usersController.getById(req.params)
-        .then(response => {
+        .then((response) => {
           res.status(response.statusCode);
           res.json(response.data);
         });
     })
     .put((req, res) => {
       usersController.update(req.body, req.params)
-        .then(response => {
+        .then((response) => {
           res.status(response.statusCode);
           res.json(response.data);
         });
     })
     .delete((req, res) => {
       usersController.delete(req.params)
-        .then(response => {
+        .then((response) => {
           res.status(response.statusCode);
           res.json(response.data);
         });

@@ -1,7 +1,7 @@
 import jwt from 'jwt-simple';
 
 describe('Routes Books', () => {
-  const jwtSecret = app.config.jwtSecret;
+  const { jwtSecret } = app.config;
 
   const {
     Books,
@@ -24,20 +24,20 @@ describe('Routes Books', () => {
   let token;
   beforeEach((done) => {
     Users.destroy({
-        where: {}
-      })
+      where: {},
+    })
       .then(() => Users.create(defaultUser))
       .then((user) => {
         Books.destroy({
-            where: {}
-          })
+          where: {},
+        })
           .then(() => Books.create(defaultBook))
           .then(() => {
             token = jwt.encode({
-              id: user.id
-            }, jwtSecret)
+              id: user.id,
+            }, jwtSecret);
             done();
-          })
+          });
       });
   });
 

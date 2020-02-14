@@ -50,7 +50,7 @@ class BooksController {
       .catch(error => errorResponse(error.message, HttpStatus.UNPROCESSABLE_ENTITY));
   }
 
-  delete(params) {
+  destroy(params) {
     return this
       .Books
       .destroy({
